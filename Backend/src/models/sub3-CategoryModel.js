@@ -13,20 +13,11 @@ const sub3CategorySchema = new Schema({
         required: true
     },
 
-    price: {
-        type: Number,
-        required: true
+    products: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
     },
-
-    warranty: {
-        type: String,
-        required: true
-    },
-
-    details: {
-        type: String,
-        required: true, 
-    }
+    
 }, {timestamps: true}
 );
 
