@@ -18,6 +18,12 @@ const productSchema = new Schema({
         required: true
     },
 
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true
+    },
+
     startingDate: {
         type: Number,
         required: true
