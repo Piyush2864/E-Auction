@@ -4,7 +4,7 @@ import { allAuction, createAuction, deleteAuction, getAuctionById, updateAuction
 
 const router = express.Router();
 
-router.route('/creste-auction').post(createAuction);
+router.route('/create-auction').post(createAuction);
 
 router.route('/all-auction').get(allAuction);
 
