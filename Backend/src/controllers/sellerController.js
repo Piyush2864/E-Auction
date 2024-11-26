@@ -38,7 +38,7 @@ export const getAllSeller = async(req, res) => {
 };
 
 
-export const getUserById = async(req, res)=> {
+export const getSellerById = async(req, res)=> {
     const { sellerId } = req.params;
     
     try {
