@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import connectToDb from '../Backend/src/db/config.js';
 import cookieParser from 'cookie-parser';
 import userRoute from '../Backend/src/routes/userRoutes.js';
@@ -22,12 +23,12 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Mount API routes
-app.use('api/v1/auction/user', userRoute);
-app.use('api/v1/auction/seller', sellerRoute);
-app.use('api/v1/auction/product', productRoute);
-app.use('api/v1/auction/category', categoryRoute);
-app.use('api/v1/auction/bid', bidRoute);
-app.use('api/v1/auction/auction', auctonRoute);
+app.use('/api/v1/auction/user', userRoute);
+app.use('/api/v1/auction/seller', sellerRoute);
+app.use('/api/v1/auction/product', productRoute);
+app.use('/api/v1/auction/category', categoryRoute);
+app.use('/api/v1/auction/bid', bidRoute);
+app.use('/api/v1/auction/auction', auctonRoute);
 
 // Establish a connection to the database
 connectToDb();

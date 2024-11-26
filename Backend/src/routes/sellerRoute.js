@@ -17,3 +17,5 @@ router.route('/delete-seller/:id').delete(deleteSeller);
 router.route('/products/:id').get(getSellerProducts);
 
 router.route('/verify/:id').put(verifySeller);
+
+export default router;

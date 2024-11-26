@@ -1,5 +1,5 @@
 import express from "express";
-import { allAuction, createAuction, deleteAuction, getAuctionById, updateAuctionStatus } from "../controllers/auctionController";
+import { allAuction, createAuction, deleteAuction, getAuctionById, updateAuctionStatus } from "../controllers/auctionController.js";
 
 
 const router = express.Router();
@@ -13,3 +13,5 @@ router.route('/getauction/:id').get(getAuctionById);
 router.route('/status-update/:id').put(updateAuctionStatus);
 
 router.route('/delete-auction/:id').delete(deleteAuction);
+
+export default router;

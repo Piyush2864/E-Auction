@@ -1,5 +1,5 @@
 import express from "express";
-import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../controllers/categoryContoller";
+import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../controllers/categoryContoller.js";
 
 
 const router = express.Router();
@@ -14,3 +14,5 @@ router.route('/update-category/:id').put(updateCategory);
 
 router.route('/delete/:id').delete(deleteCategory);
 
+
+export default router;
