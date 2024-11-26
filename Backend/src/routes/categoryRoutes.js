@@ -12,5 +12,5 @@ router.route('/get-category/:id').get(getCategoryById);
 
 router.route('/update-category/:id').put(updateCategory);
 
-router.route('/delete').delete(deleteCategory);
+router.route('/delete/:id').delete(deleteCategory);
 

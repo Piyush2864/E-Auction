@@ -14,6 +14,6 @@ router.route('/update-seler/:id').put(updateSeller);
 
 router.route('/delete-seller/:id').delete(deleteSeller);
 
-router.route('/:id/products').get(getSellerProducts);
+router.route('/products/:id').get(getSellerProducts);
 
-router.route('/:id/verify').put(verifySeller);
+router.route('/verify/:id').put(verifySeller);

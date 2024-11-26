@@ -8,7 +8,7 @@ router.route('/creste-auction').post(createAuction);
 
 router.route('/all-auction').get(allAuction);
 
-router.route('/auction/:id').get(getAuctionById);
+router.route('/getauction/:id').get(getAuctionById);
 
 router.route('/status-update/:id').put(updateAuctionStatus);
 
