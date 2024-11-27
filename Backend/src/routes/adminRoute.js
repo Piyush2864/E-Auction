@@ -27,3 +27,5 @@ router.route('/auctions').get(getAllAuctions);
 router.route('/end-auction').post(endAuction);
 
 router.route('/get-product-bids/:productId').get(getBidsForProduct);
+
+export default router;
