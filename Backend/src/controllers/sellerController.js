@@ -2,18 +2,34 @@ import Product from '../models/productModel.js';
 import Seller from '../models/sellerModel.js';
 
 
-export const createSeller = async(req, res)=> {
+export const createSeller = async (req, res) => {
+    const { name, email, phone, address } = req.body;
     try {
-        const seller = new Seller(req.body);
-        const sellerCreated = await seller.save();
+        const existingSeller = await Seller.findOne({ email });
+
+        if (existingSeller) {
+            return res.status(400).json({
+                success: false,
+                message: 'Seller with this email already exixts.'
+            });
+        }
+
+        const newSeller = new Seller({
+            name,
+            email,
+            phone,
+            address,
+        });
+
+        const savedSeller = await newSeller.save();
 
         return res.status(201).json({
             success: true,
             message: 'Seller created successfully.',
-            data: sellerCreated
+            data: savedSeller
         });
     } catch (error) {
-        console.error("Error in creating seller.", error);
+        console.error('Error creating seller.', error);
         return res.status(500).json({
             success: false,
             message: 'Server error.'
@@ -21,7 +37,7 @@ export const createSeller = async(req, res)=> {
     }
 };
 
-export const getAllSeller = async(req, res) => {
+export const getAllSeller = async (req, res) => {
     try {
         const seller = await Seller.find().populate('listedProducts', 'name description status');
         return res.status(200).json({
@@ -38,13 +54,13 @@ export const getAllSeller = async(req, res) => {
 };
 
 
-export const getSellerById = async(req, res)=> {
+export const getSellerById = async (req, res) => {
     const { sellerId } = req.params;
     console.log("seller", sellerId)
     try {
         const seller = await Seller.findById(sellerId).populate('listedProducts');
         console.log("seller", sellerId)
-        if(!seller) {
+        if (!seller) {
             return res.status(404).json({
                 success: false,
                 message: 'Seller not found.'
@@ -66,20 +82,20 @@ export const getSellerById = async(req, res)=> {
 };
 
 
-export const updateSeller = async(req, res)=> {
+export const updateSeller = async (req, res) => {
     const { sellerId } = req.params;
-    const { name, phone } = req.body;
+    const { name, phone, address } = req.body;
 
     try {
-        const updatedSeller = await Seller.findByIdAndUpdate(sellerId, {name, phone}, {new: true});
+        const updatedSeller = await Seller.findByIdAndUpdate(sellerId, { name, phone, address }, { new: true });
 
-        if(!updatedSeller) {
+        if (!updatedSeller) {
             return res.status(404).json({
                 success: false,
                 message: 'User not found.'
             });
         }
-        
+
         return res.status(200).json({
             success: true,
             message: 'Updated successfully.',
@@ -95,20 +111,20 @@ export const updateSeller = async(req, res)=> {
 };
 
 
-export const deleteSeller = async(req, res) => {
+export const deleteSeller = async (req, res) => {
     const { sellerId } = req.params;
 
     try {
         const deleteSeller = await Seller.findByIdAndDelete(sellerId);
 
-        if(!deleteSeller){
+        if (!deleteSeller) {
             return res.status(404).json({
                 success: false,
                 message: 'Seller not found.'
             });
         }
 
-        await Product.deleteMany({seller: sellerId});
+        await Product.deleteMany({ seller: sellerId });
         return res.status(200).json({
             success: true,
             message: 'Seller and their product delete successfully.'
@@ -123,12 +139,12 @@ export const deleteSeller = async(req, res) => {
 };
 
 
-export const getSellerProducts = async(req, res) => {
+export const getSellerProducts = async (req, res) => {
     const { sellerId } = req.params;
 
     try {
         const seller = await Seller.findById(sellerId).populate('listedProducts');
-        if(!seller){
+        if (!seller) {
             return res.status(404).json({
                 success: false,
                 message: 'Seller not found.'
@@ -149,13 +165,13 @@ export const getSellerProducts = async(req, res) => {
 };
 
 
-export const verifySeller = async(req, res) => {
+export const verifySeller = async (req, res) => {
     const { sellerId } = req.params;
     console.log("seller", sellerId)
     try {
-        const seller = await Seller.findByIdAndUpdate(sellerId, {verified: true}, { new: true });
+        const seller = await Seller.findByIdAndUpdate(sellerId, { verified: true }, { new: true });
 
-        if(!seller) {
+        if (!seller) {
             return res.status(404).json({
                 success: false,
                 message: 'Seller not found.'

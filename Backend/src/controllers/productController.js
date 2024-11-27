@@ -1,18 +1,24 @@
 import Product from '../models/productModel.js';
-import Seller from '../models/sellerModel.js';
+import Seller from '../models/sellerModel.js'
 
 
 
 // In your controllers/productController.js
 export const createProduct = async (req, res) => {
+    const { name, description, seller, category, startingDate, currentBid, bidEndDate } = req.body;
     try {
-        const { name, description, seller, category, startingDate, currentBid, bidEndDate, status } = req.body;
-
-        // Validate required fields
         if (!name || !description || !seller || !category || !startingDate || !bidEndDate) {
             return res.status(400).json({
                 success: false,
-                message: 'All required fields must be provided.'
+                message: 'All fields are required.'
+            });
+        }
+
+        const sellerExists = await Seller.findById(seller);
+        if (!sellerExists) {
+            return res.status(404).json({
+                success: false,
+                message: 'Seller not found. Please provide a valid seller Id.'
             });
         }
 
@@ -22,34 +28,36 @@ export const createProduct = async (req, res) => {
             seller,
             category,
             startingDate,
-            currentBid,
+            currentBid: currentBid || 0,
             bidEndDate,
-            status
         });
 
-        const product = await newProduct.save();
+        const savedProduct = await newProduct.save();
 
-        return res.status(201).json({
+        sellerExists.listedProducts.push(savedProduct._id);
+        await sellerExists.save();
+
+        return res.ststus(201).json({
             success: true,
             message: 'Product created successfully.',
-            data: product
+            data: savedProduct
         });
     } catch (error) {
-        console.error("Error creating product:", error);
+        console.error('Error creating product.', error);
         return res.status(500).json({
             success: false,
-            message: 'Internal Server Error'
+            message: 'Server error.'
         });
     }
 };
 
 
-export const getProductById = async(req, res) => {
+export const getProductById = async (req, res) => {
     const { productId } = req.params;
 
     try {
         const product = await Product.findById(productId).populate('seller category');
-        if(!product) {
+        if (!product) {
             return res.status(404).json({
                 success: false,
                 message: "Product not found."

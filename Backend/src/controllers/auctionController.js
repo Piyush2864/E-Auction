@@ -23,6 +23,13 @@ export const createAuction = async(req, res) => {
             });
         }
 
+        if(existingProduct.isInAuction) {
+            return res.status(400).json({
+                success: false,
+                message: 'This product is already in an active auction.'
+            });
+        }
+
         const auction = new Auction({
             product,
             seller,
@@ -30,11 +37,16 @@ export const createAuction = async(req, res) => {
             bidEndDate
         });
 
-        await auction.save();
+        const savedAuction = await auction.save();
+
+        existingProduct.isInAuction = true;
+        existingProduct.auctionHistory.push(savedAuction._id);
+        await existingProduct.save();
+
         return res.status(201).json({
             success: true,
             message: 'Auction created successfully',
-            data: auction
+            data: savedAuction
         });
     } catch (error) {
         console.error("Error creating auction", error);
