@@ -55,6 +55,11 @@ const productSchema = new Schema({
         default: 'active'
     },
 
+    isInAuction: {
+        type: Boolean,
+        default: false
+    },
+
     images: [
         {
             type: String
