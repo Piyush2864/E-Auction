@@ -11,6 +11,8 @@ import bidRoute from '../Backend/src/routes/bidRoutes.js';
 import auctonRoute from '../Backend/src/routes/auctionRoutes.js';
 import adminRoute from '../Backend/src/routes/adminRoute.js';
 import emailRoutes from '../Backend/src/routes/emailRoutes.js';
+import buyerDashboardRoute from '../Backend/src/routes/buyerDashboardRoute.js';
+import sellerDashboardRoute from '../Backend/src/routes/sellerDashboardRoute.js';
 
 // Load environment variables from the .env file
 dotenv.configDotenv();
@@ -33,6 +35,8 @@ app.use('/api/v1/auction/bid', bidRoute);
 app.use('/api/v1/auction/auction', auctonRoute);
 app.use('/api/v1/auction/admin', adminRoute);
 app.use('/api/v1/auction/admin', emailRoutes);
+app.use('/api/v1/auction/buyer', buyerDashboardRoute);
+app.use('/api/v1/auction/seller', sellerDashboardRoute);
 
 // Establish a connection to the database
 connectToDb();
