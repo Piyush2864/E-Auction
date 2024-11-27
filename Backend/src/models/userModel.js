@@ -23,6 +23,10 @@ const userSchema = new Schema({
         type: String,
         enum: ['buyer', 'seller', 'admin'],
         default: 'buyer'
+    },
+
+    notification: {
+        type: String
     }
 }, {timestamps: true},
 );
