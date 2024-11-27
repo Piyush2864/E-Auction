@@ -27,7 +27,16 @@ const userSchema = new Schema({
 
     notification: {
         type: String
-    }
+    },
+
+    notification: [
+        {
+            message: String,
+            read: {type: Boolean, default: false},
+            createdAt:{type: Date, default: Date.now},
+        }
+    ]
+    
 }, {timestamps: true},
 );
 

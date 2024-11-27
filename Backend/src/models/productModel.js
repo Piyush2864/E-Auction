@@ -70,7 +70,15 @@ const productSchema = new Schema({
         {
             type: String
         }
-    ]
+    ],
+
+    auctionHistory: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Auction'
+        }
+    ],
+    
 }, {timestamps: true}
 );
 

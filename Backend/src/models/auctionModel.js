@@ -20,6 +20,11 @@ const auctionSchema = new Schema({
         required: true
     },
 
+    winningBid:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Bid'
+    },
+
     currentBid: {
         type: Number,
         default: 0

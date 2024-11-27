@@ -34,10 +34,21 @@ const sellerSchema = new Schema({
         },
     ],
 
+    totalRevenue: {
+        type: Number,
+        default: 0
+    },
+
+    totalProductsSold: {
+        type: Number,
+        default: 0
+    },
+
     joinDate: {
         type: Date,
         default: Date.now
     }
+    
 }, { timestamps: true}
 );
 
