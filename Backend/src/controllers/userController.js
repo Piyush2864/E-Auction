@@ -1,13 +1,15 @@
 import User from '../models/userModel.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 
-export const registerUser = async(req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
-        if(!name || !email || !password) {
+        if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required.'
@@ -21,7 +23,7 @@ export const registerUser = async(req, res) => {
 
         const userExists = await User.findOne({ email });
 
-        if(userExists) {
+        if (userExists) {
             return res.status(400).json({
                 success: false,
                 message: "User already exists."
@@ -54,13 +56,13 @@ export const registerUser = async(req, res) => {
 };
 
 
-export const loginUser = async(req, res) => {
+export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
         const user = await User.findOne({ email });
 
-        if(!user) {
+        if (!user) {
             return res.status(400).json({
                 success: false,
                 message: "User does not exist."
@@ -69,14 +71,14 @@ export const loginUser = async(req, res) => {
 
         const isPasswordMatch = await bcrypt.compare(password, user.password);
 
-        if(!isPasswordMatch) {
+        if (!isPasswordMatch) {
             return res.status(400).json({
                 success: false,
                 message: 'invalid name and password.'
             });
         }
 
-        const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET, { expiresIn: '1d'});
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         res.cookie('token', token, {
             httpOnly: true,
@@ -99,6 +101,108 @@ export const loginUser = async(req, res) => {
 };
 
 
-export const logOutUser = async(req, res)=> {
-    
+export const logOutUser = async (req, res) => {
+
+};
+
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+
+const generateResetToken = () => {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha26').update(resetToken).digest('hex');
+    return { resetToken, hashedToken };
 }
+
+export const forgotPassword = async(req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email});
+
+        if(!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User with this email does not exist.'
+            });
+        }
+
+        const { resetToken, hashedToken} = generateResetToken();
+
+        const resetTokenExpiry = date.now() + 15 * 60 * 1000;
+
+        user.resetTokenExpiry = hashedToken;
+        user.resetPasswordExpires = resetTokenExpiry;
+
+        await user.save();
+
+        const resetUrl = `${req.protocol}://${req.get(
+            'host'
+        )}/api/users/reset-password/${resetToken}`;
+        
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Password Reset Request',
+            text:`You requested a password reset. Please click the following link to reset your password: ${resetUrl}\n\nIF you didn't request this, please ignore this email.`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Password reset link has been sent to your email.'
+        });
+    } catch (error) {
+        console.error('Error in forgot password:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server  error. Please try again later.'
+        });
+    }
+};
+
+
+export const resetPassword = async(req, res) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    try {
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: Date.now()},
+        });
+
+        if(!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or expired reset token.'
+            });
+        }
+
+        user.password = newPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Password has been reset successfully.'
+        });
+    } catch (error) {
+        console.error('Error in reset password.', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error. Please try again.'
+        });
+    }
+};

@@ -5,6 +5,6 @@ import { notifyBuyerAboutAuction } from '../controllers/emailController.js';
 const router = express.Router();
 
 
-router.route('/notify-biyers').post(notifyBuyerAboutAuction);
+router.route('/notify-buyers').post(notifyBuyerAboutAuction);
 
 export default router;
