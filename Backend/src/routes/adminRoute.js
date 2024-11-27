@@ -1,5 +1,6 @@
 import express from 'express';
 import { approveProductForAuction, approveSeller, deleteProduct, deleteUser, endAuction, getAllAuctions, getAllProducts, getAllSellers, getAllUsers, getBidsForProduct, rejectProductForAuction, rejectSeller } from '../controllers/adminController.js';
+import { getAdminDashboardData } from '../controllers/adminDashboardController.js';
 
 
 const router = express.Router();
@@ -27,5 +28,7 @@ router.route('/auctions').get(getAllAuctions);
 router.route('/end-auction').post(endAuction);
 
 router.route('/get-product-bids/:productId').get(getBidsForProduct);
+
+router.route('./dashboard').get(getAdminDashboardData);
 
 export default router;
