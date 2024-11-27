@@ -87,7 +87,7 @@ export const getBidsByUser = async(req, res) => {
     const { userId } = req.params;
 
     try {
-        const bidsByUser = await Bid.find({ user: userId}).populate('aucton', 'product currentBid');
+        const bidsByUser = await Bid.find({ user: userId}).populate('auction', 'product currentBid');
 
         if(!bidsByUser || bidsByUser.length === 0) {
             return res.status(404).json({

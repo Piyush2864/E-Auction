@@ -3,39 +3,46 @@ import Seller from '../models/sellerModel.js';
 
 
 
-export const createProduct = async(req, res) => {
-    const { sellerId, ...productData } = req.body;
-
+// In your controllers/productController.js
+export const createProduct = async (req, res) => {
     try {
-        const seller = await Seller.findById(sellerId);
+        const { name, description, seller, category, startingDate, currentBid, bidEndDate, status } = req.body;
 
-        if(!seller) {
-            return res.status(404).json({
+        // Validate required fields
+        if (!name || !description || !seller || !category || !startingDate || !bidEndDate) {
+            return res.status(400).json({
                 success: false,
-                message: 'Seller not found.'
+                message: 'All required fields must be provided.'
             });
         }
 
-        const product = new Product({...productData, seller: sellerId});
-        await product.save();
+        const newProduct = new Product({
+            name,
+            description,
+            seller,
+            category,
+            startingDate,
+            currentBid,
+            bidEndDate,
+            status
+        });
 
-        seller.listedProducts.push(product._id);
-        const listed = await seller.save();
+        const product = await newProduct.save();
 
         return res.status(201).json({
             success: true,
-            message: "Product created successfully.",
-            product,
-            listed
+            message: 'Product created successfully.',
+            data: product
         });
     } catch (error) {
-        console.error("Error in adding product.", error);
+        console.error("Error creating product:", error);
         return res.status(500).json({
             success: false,
-            message: 'Server error.'
+            message: 'Internal Server Error'
         });
     }
 };
+
 
 export const getProductById = async(req, res) => {
     const { productId } = req.params;
@@ -49,7 +56,7 @@ export const getProductById = async(req, res) => {
             });
         }
 
-        return res.status(200).jsoN({
+        return res.status(200).json({
             success: true,
             data: product
         });

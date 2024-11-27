@@ -1,21 +1,21 @@
 import express from "express";
 import { createSeller, deleteSeller, getAllSeller, getSellerById, getSellerProducts, updateSeller, verifySeller } from '../controllers/sellerController.js';
-
+import { protect } from '../middlewares/authMiddleware.js'
 
 const router = express.Router();
 
-router.route('/create-seller').post(createSeller);
+router.route('/create-seller').post(protect, createSeller);
 
-router.route('/get-all-seller').get(getAllSeller);
+router.route('/get-all-seller').get(protect, getAllSeller);
 
-router.route('/get-seller/:id').get(getSellerById);
+router.route('/get-seller/:sellerId').get(protect, getSellerById);
 
-router.route('/update-seler/:id').put(updateSeller);
+router.route('/update-seller/:sellerId').put(protect, updateSeller);
 
-router.route('/delete-seller/:id').delete(deleteSeller);
+router.route('/delete-seller/:id').delete(protect, deleteSeller);
 
-router.route('/products/:id').get(getSellerProducts);
+router.route('/products/:id').get(protect, getSellerProducts);
 
-router.route('/verify/:id').put(verifySeller);
+router.route('/verify/:sellerId').put(protect, verifySeller);
 
 export default router;

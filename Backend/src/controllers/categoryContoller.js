@@ -7,14 +7,14 @@ export const createCategory = async(req, res)=> {
 
     try {
         const existingCategory = await Category.findOne({ name });
-        if(!existingCategory) {
+        if(existingCategory) {
             return res.status(400).json({
                 success: false,
                 message: 'Category already exists.'
             });
         }  
         const category = await Category.create({ name });
-        return res.sataus(201).json({
+        return res.status(201).json({
             success: true,
             message: 'Category created successfully.'
         });

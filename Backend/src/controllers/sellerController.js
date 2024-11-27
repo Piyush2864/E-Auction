@@ -40,10 +40,10 @@ export const getAllSeller = async(req, res) => {
 
 export const getSellerById = async(req, res)=> {
     const { sellerId } = req.params;
-    
+    console.log("seller", sellerId)
     try {
         const seller = await Seller.findById(sellerId).populate('listedProducts');
-
+        console.log("seller", sellerId)
         if(!seller) {
             return res.status(404).json({
                 success: false,
@@ -150,8 +150,8 @@ export const getSellerProducts = async(req, res) => {
 
 
 export const verifySeller = async(req, res) => {
-    const { sllerId } = req.params;
-
+    const { sellerId } = req.params;
+    console.log("seller", sellerId)
     try {
         const seller = await Seller.findByIdAndUpdate(sellerId, {verified: true}, { new: true });
 

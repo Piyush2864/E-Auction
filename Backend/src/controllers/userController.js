@@ -5,13 +5,18 @@ import jwt from 'jsonwebtoken';
 
 export const registerUser = async(req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
 
         if(!name || !email || !password) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required.'
             });
+        }
+
+        const validRoles = ['buyer', 'seller', 'admin'];
+        if (role && !validRoles.includes(role)) {
+            return res.status(400).json({ message: 'Invalid role specified.' });
         }
 
         const userExists = await User.findOne({ email });

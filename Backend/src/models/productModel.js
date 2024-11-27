@@ -25,7 +25,7 @@ const productSchema = new Schema({
     },
 
     startingDate: {
-        type: Number,
+        type: String,
         required: true
     },
 
