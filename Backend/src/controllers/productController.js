@@ -22,6 +22,14 @@ export const createProduct = async (req, res) => {
             });
         }
 
+        const categoryExists = await Category.findById(category);
+        if (!categoryExists) {
+            return res.status(404).json({
+                success: false,
+                message: 'Category not found. Please provide a valid category Id.'
+            });
+        }
+
         const newProduct = new Product({
             name,
             description,

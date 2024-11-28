@@ -165,29 +165,29 @@ export const getSellerProducts = async (req, res) => {
 };
 
 
-export const verifySeller = async (req, res) => {
-    const { sellerId } = req.params;
-    console.log("seller", sellerId)
-    try {
-        const seller = await Seller.findByIdAndUpdate(sellerId, { verified: true }, { new: true });
+// export const verifySeller = async (req, res) => {
+//     const { sellerId } = req.params;
+//     console.log("seller", sellerId)
+//     try {
+//         const seller = await Seller.findByIdAndUpdate(sellerId, { verified: true }, { new: true });
 
-        if (!seller) {
-            return res.status(404).json({
-                success: false,
-                message: 'Seller not found.'
-            });
-        }
+//         if (!seller) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'Seller not found.'
+//             });
+//         }
 
-        return res.status(200).json({
-            success: true,
-            message: 'Seller verified successfully.',
-            data: seller
-        });
-    } catch (error) {
-        console.error("Error in verifing seller.");
-        return res.status(500).json({
-            success: false,
-            message: 'Server error.'
-        });
-    }
-};
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Seller verified successfully.',
+//             data: seller
+//         });
+//     } catch (error) {
+//         console.error("Error in verifing seller.");
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Server error.'
+//         });
+//     }
+// };

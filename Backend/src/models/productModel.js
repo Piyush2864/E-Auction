@@ -52,9 +52,9 @@ const productSchema = new Schema({
         default: Date.now
     },
 
-    soldDate: {
-        type: Date
-    },
+    // soldDate: {
+    //     type: Date
+    // },
 
     status: {
         type: String,
@@ -79,12 +79,12 @@ const productSchema = new Schema({
         }
     ],
 
-    auctionHistory: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Auction'
-        }
-    ],
+    // auctionHistory: [
+    //     {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: 'Auction'
+    //     }
+    // ],
     
 }, {timestamps: true}
 );

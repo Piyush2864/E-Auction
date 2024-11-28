@@ -25,10 +25,6 @@ const userSchema = new Schema({
         default: 'buyer'
     },
 
-    notification: {
-        type: String
-    },
-
     notification: [
         {
             message: String,

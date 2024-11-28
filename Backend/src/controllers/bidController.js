@@ -1,56 +1,97 @@
 import Bid from '../models/bidModel.js';
 import Auction from '../models/auctionModel.js';
+import User from '../models/userModel.js';
 
 
 export const placeBid = async (req, res) => {
     const { auctionId, userId, amount } = req.body;
 
     try {
-        const playsAuctionBid = await Auction.findById(auctionId);
-
-        if (!playsAuctionBid) {
+        
+        const auction = await Auction.findById(auctionId).populate('product');
+        if (!auction) {
             return res.status(404).json({
                 success: false,
-                message: 'Auction not found.'
+                message: 'Auction not found.',
             });
         }
 
-        if (playsAuctionBid.status !== 'active') {
+
+        if (auction.status !== 'active') {
             return res.status(400).json({
                 success: false,
-                message: 'Auction is not active.'
+                message: 'Auction is not active.',
             });
         }
 
-        if (amount <= playsAuctionBid.currentBid) {
+        
+        if (new Date() > auction.bidEndDate) {
             return res.status(400).json({
                 success: false,
-                message: 'Bid amount must be highre than the current bid.'
+                message: 'Auction has ended. Bidding is closed.',
             });
         }
+
+        
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found.',
+            });
+        }
+
+        
+        const product = auction.product;
+        if (!product || !product.isInAuction) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product is not in an active auction.',
+            });
+        }
+
+        
+        if (amount <= auction.currentBid) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bid amount must be higher than the current bid.',
+            });
+        }
+
 
         const bid = new Bid({
             auction: auctionId,
             user: userId,
-            amount
+            amount,
         });
-
         await bid.save();
 
-        playsAuctionBid.currentBid = amount;
-        playsAuctionBid.bids.push(bid._id);
-        await playsAuctionBid.save();
+        
+        auction.currentBid = amount;
+        auction.bids.push(bid._id);
+        await auction.save();
+
+    
+        const seller = await Seller.findById(auction.seller);
+        if (seller) {
+            seller.notifications.push({
+                message: `A new bid of ${amount} has been placed on your product "${product.name}".`,
+                read: false,
+            });
+            await seller.save();
+        }
 
         return res.status(201).json({
             success: true,
-            message: 'Bid place successfully.',
-            bid
-        })
+            message: 'Bid placed successfully.',
+            bid,
+            auction,
+        });
     } catch (error) {
-        console.error('Error placing bid', error);
+        console.error('Error placing bid:', error);
         return res.status(500).json({
             success: false,
-            message: 'Server error'
+            message: 'Server error. Please try again later.',
         });
     }
 };

@@ -3,62 +3,84 @@ import Product from '../models/productModel.js';
 import Seller from '../models/sellerModel.js';
 
 
-export const createAuction = async(req, res) => {
-    const { product, seller, startingPrice, bidEndDate } = req.body;
+export const createAuction = async (req, res) => {
+    const { product, startingPrice, bidEndDate } = req.body;
+
     try {
-        const existingSeller = await Seller.findById(seller);
-        const existingProduct = await Product.findById(product);
+        
+        const existingProduct = await Product.findById(product).populate('seller');
 
-        if(!existingSeller){
+        if (!existingProduct) {
             return res.status(404).json({
                 success: false,
-                message: 'Seller not found.'
+                message: 'Product not found.',
             });
         }
 
-        if(!existingProduct) {
-            return res.status(404).json({
-                success: false,
-                message: 'Product not found.'
-            });
-        }
-
-        if(existingProduct.isInAuction) {
+        
+        if (existingProduct.status !== 'active') {
             return res.status(400).json({
                 success: false,
-                message: 'This product is already in an active auction.'
+                message: `Cannot create auction. Product status is '${existingProduct.status}'.`,
             });
         }
+
+    
+        if (existingProduct.isInAuction) {
+            return res.status(400).json({
+                success: false,
+                message: 'This product is already in an active auction.',
+            });
+        }
+
+
+        const existingSeller = existingProduct.seller;
+        if (!existingSeller) {
+            return res.status(404).json({
+                success: false,
+                message: 'Associated seller not found for the product.',
+            });
+        }
+
+
+        if (new Date(bidEndDate) <= Date.now()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bid end date must be in the future.',
+            });
+        }
+
 
         const auction = new Auction({
             product,
-            seller,
+            seller: existingSeller._id,
             startingPrice,
-            bidEndDate
+            currentBid: startingPrice, 
+            bidEndDate,
         });
 
         const savedAuction = await auction.save();
 
+        
         existingProduct.isInAuction = true;
         existingProduct.auctionHistory.push(savedAuction._id);
         await existingProduct.save();
 
         return res.status(201).json({
             success: true,
-            message: 'Auction created successfully',
-            data: savedAuction
+            message: 'Auction created successfully.',
+            data: savedAuction,
         });
     } catch (error) {
-        console.error("Error creating auction", error);
+        console.error('Error creating auction:', error);
         return res.status(500).json({
             success: false,
-            message: 'Server error'
+            message: 'Server error. Please try again later.',
         });
     }
-};
+}
 
-
-export const allAuction = async(req, res) => {
+export const allAuction = async (req, res) => {
     try {
         const auctions = await Auction.find().populate('product', 'name description').populate('seller', 'name email');
 
@@ -76,12 +98,12 @@ export const allAuction = async(req, res) => {
 };
 
 
-export const getAuctionById = async(req, res) => {
+export const getAuctionById = async (req, res) => {
     const { id } = req.params;
     try {
         const auction = await Auction.findById(id).populate('product', 'name description').populate('seller', 'name email').populate('bids');
 
-        if(!auction){
+        if (!auction) {
             return res.status(404).json({
                 success: false,
                 messasge: 'Auction not found'
@@ -93,7 +115,7 @@ export const getAuctionById = async(req, res) => {
             data: auction
         });
     } catch (error) {
-        console.error('Error fetching auction.' , error);
+        console.error('Error fetching auction.', error);
         return res.status(500).json({
             success: false,
             message: 'Server error'
@@ -102,14 +124,14 @@ export const getAuctionById = async(req, res) => {
 };
 
 
-export const updateAuctionStatus = async(req, res) => {
+export const updateAuctionStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
     try {
-        const auction = await Auction.findByIdAndUpdate(id, {status}, {new: true});
+        const auction = await Auction.findByIdAndUpdate(id, { status }, { new: true });
 
-        if(!auction){
+        if (!auction) {
             return res.status(404).json({
                 success: false,
                 message: 'Auction not found.'
@@ -131,13 +153,13 @@ export const updateAuctionStatus = async(req, res) => {
 };
 
 
-export const deleteAuction = async(req, res) => {
+export const deleteAuction = async (req, res) => {
     const { id } = req.params;
 
     try {
         const auction = await Auction.findByIdAndDelete(id);
 
-        if(!auction){
+        if (!auction) {
             return res.status(404).json({
                 success: false,
                 message: 'Auction not found.'

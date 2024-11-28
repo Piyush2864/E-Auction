@@ -1,5 +1,5 @@
 import express from "express";
-import { createSeller, deleteSeller, getAllSeller, getSellerById, getSellerProducts, updateSeller, verifySeller } from '../controllers/sellerController.js';
+import { createSeller, deleteSeller, getAllSeller, getSellerById, getSellerProducts, updateSeller } from '../controllers/sellerController.js';
 import { protect } from '../middlewares/authMiddleware.js'
 
 const router = express.Router();
@@ -16,6 +16,6 @@ router.route('/delete-seller/:id').delete(protect, deleteSeller);
 
 router.route('/products/:id').get(protect, getSellerProducts);
 
-router.route('/verify/:sellerId').put(protect, verifySeller);
+// router.route('/verify/:sellerId').put(protect, verifySeller);
 
 export default router;

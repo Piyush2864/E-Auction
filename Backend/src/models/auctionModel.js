@@ -9,11 +9,11 @@ const auctionSchema = new Schema({
         required: true
     },
 
-    seller: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seller',
-        required: true
-    },
+    // seller: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Seller',
+    //     required: true
+    // },
 
     startingPrice: {
         type: Number,
@@ -25,22 +25,22 @@ const auctionSchema = new Schema({
         ref: 'Bid'
     },
 
-    currentBid: {
-        type: Number,
-        default: 0
-    },
+    // currentBid: {
+    //     type: Number,
+    //     default: 0
+    // },
 
     bidEndDate: {
         type: Date,
         required: true
     },
 
-    bids: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Bid'
-        }
-    ],
+    // bids: [
+    //     {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: 'Bid'
+    //     }
+    // ],
 
     status: {
         type: String,
