@@ -24,6 +24,13 @@ const productSchema = new Schema({
         required: true
     },
 
+    bids: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Bid',
+        },
+      ],
+
     startingDate: {
         type: String,
         required: true

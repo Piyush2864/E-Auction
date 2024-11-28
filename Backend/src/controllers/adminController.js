@@ -2,6 +2,7 @@ import Seller from '../models/sellerModel.js';
 import User from '../models/userModel.js'
 import Product from '../models/productModel.js';
 import Auction from '../models/auctionModel.js';
+import mongoose from 'mongoose'
 
 export const getAllUsers = async(req, res) => {
     try {
@@ -276,6 +277,13 @@ export const getBidsForProduct = async(req, res) => {
     const { productId } = req.params;
 
     try {
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({
+              success: false,
+              message: 'Invalid product ID.',
+            });
+          }
+
         const product = await Product.findById(productId).populate('bids');
 
         if(!product) {
