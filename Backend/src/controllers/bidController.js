@@ -1,6 +1,7 @@
 import Bid from '../models/bidModel.js';
 import Auction from '../models/auctionModel.js';
 import User from '../models/userModel.js';
+import Seller from '../models/sellerModel.js';
 
 
 export const placeBid = async (req, res) => {

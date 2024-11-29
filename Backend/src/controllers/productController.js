@@ -1,6 +1,5 @@
 import Product from '../models/productModel.js';
-import Seller from '../models/sellerModel.js';
-import Category from '../models/category.js';
+import Seller from '../models/sellerModel.js'
 
 
 
@@ -46,7 +45,7 @@ export const createProduct = async (req, res) => {
         sellerExists.listedProducts.push(savedProduct._id);
         await sellerExists.save();
 
-        return res.status(201).json({
+        return res.ststus(201).json({
             success: true,
             message: 'Product created successfully.',
             data: savedProduct
