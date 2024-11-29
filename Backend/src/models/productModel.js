@@ -79,12 +79,12 @@ const productSchema = new Schema({
         }
     ],
 
-    // auctionHistory: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: 'Auction'
-    //     }
-    // ],
+    auctionHistory: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Auction'
+        }
+    ],
     
 }, {timestamps: true}
 );

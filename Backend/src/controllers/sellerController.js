@@ -1,24 +1,27 @@
 import Product from '../models/productModel.js';
 import Seller from '../models/sellerModel.js';
+import User from '../models/userModel.js';
+import mongoose from 'mongoose';
 
 
 export const createSeller = async (req, res) => {
-    const { name, email, phone, address } = req.body;
+    const { phone, address } = req.body;
+    const userId = req.user.id; // Use `req.user.id` instead of `req.user._id`
+    
     try {
-        const existingSeller = await Seller.findOne({ email });
+        const existingSeller = await Seller.findOne({ user: userId });
 
         if (existingSeller) {
             return res.status(400).json({
                 success: false,
-                message: 'Seller with this email already exixts.'
+                message: 'Seller with this email already exists.',
             });
         }
 
         const newSeller = new Seller({
-            name,
-            email,
             phone,
             address,
+            user: userId, // Ensure the user reference is set properly
         });
 
         const savedSeller = await newSeller.save();
@@ -26,13 +29,13 @@ export const createSeller = async (req, res) => {
         return res.status(201).json({
             success: true,
             message: 'Seller created successfully.',
-            data: savedSeller
+            data: savedSeller,
         });
     } catch (error) {
         console.error('Error creating seller.', error);
         return res.status(500).json({
             success: false,
-            message: 'Server error.'
+            message: 'Server error.',
         });
     }
 };
@@ -56,10 +59,10 @@ export const getAllSeller = async (req, res) => {
 
 export const getSellerById = async (req, res) => {
     const { sellerId } = req.params;
-    console.log("seller", sellerId)
+    // console.log("seller", sellerId)
     try {
         const seller = await Seller.findById(sellerId).populate('listedProducts');
-        console.log("seller", sellerId)
+        // console.log("seller", sellerId)
         if (!seller) {
             return res.status(404).json({
                 success: false,
@@ -143,7 +146,53 @@ export const getSellerProducts = async (req, res) => {
     const { sellerId } = req.params;
 
     try {
+        // Validate sellerId as a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid seller ID.',
+            });
+        }
+
+        // Find the seller and populate their listed products
         const seller = await Seller.findById(sellerId).populate('listedProducts');
+        if (!seller) {
+            return res.status(404).json({
+                success: false,
+                message: 'Seller not found.',
+            });
+        }
+
+        // Check if the seller has no listed products
+        if (!seller.listedProducts || seller.listedProducts.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No products listed by this seller.',
+                data: [],
+            });
+        }
+
+        // Success response with the populated product data
+        return res.status(200).json({
+            success: true,
+            data: seller.listedProducts,
+        });
+    } catch (error) {
+        console.error(`Error while fetching products for seller ${sellerId}:`, error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error. Please try again later.',
+        });
+    }
+};
+
+
+export const verifySeller = async (req, res) => {
+    const { sellerId } = req.params;
+    console.log("seller", sellerId)
+    try {
+        const seller = await Seller.findByIdAndUpdate(sellerId, { verified: true }, { new: true });
+
         if (!seller) {
             return res.status(404).json({
                 success: false,
@@ -153,41 +202,14 @@ export const getSellerProducts = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            data: seller.listedProducts
+            message: 'Seller verified successfully.',
+            data: seller
         });
     } catch (error) {
-        console.error('Error in fetching sellers products.', error);
+        console.error("Error in verifing seller.");
         return res.status(500).json({
             success: false,
             message: 'Server error.'
         });
     }
 };
-
-
-// export const verifySeller = async (req, res) => {
-//     const { sellerId } = req.params;
-//     console.log("seller", sellerId)
-//     try {
-//         const seller = await Seller.findByIdAndUpdate(sellerId, { verified: true }, { new: true });
-
-//         if (!seller) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'Seller not found.'
-//             });
-//         }
-
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Seller verified successfully.',
-//             data: seller
-//         });
-//     } catch (error) {
-//         console.error("Error in verifing seller.");
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Server error.'
-//         });
-//     }
-// };

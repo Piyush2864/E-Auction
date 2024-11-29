@@ -1,16 +1,23 @@
 import mongoose, { Schema } from 'mongoose';
+// import User from '../models/userModel.js';
 
 
 const sellerSchema = new Schema({
-    name:{
-        type: String,
-        required: true
-    },
+    // name:{
+    //     type: String,
+    //     required: true
+    // },
 
-    email: {
-        type: String,
-        required: true,
-        unique: true
+    // email: {
+    //     type: String,
+    //     required: true,
+    //     unique: true
+    // },
+
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
 
     phone: {
