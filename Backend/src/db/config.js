@@ -7,7 +7,7 @@ const connectToDb = ()=> {
 
     }).then(()=> {
         console.log("Successfully connected to mongodb.")
-    }).catch(err=> console.error('Error in connecting to mongodb.'))
+    }).catch(err=> console.error('Error in connecting to mongodb.', err))
 };
 
 export default connectToDb;

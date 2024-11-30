@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 
 export const createSeller = async (req, res) => {
     const { phone, address } = req.body;
-    const userId = req.user.id; // Use `req.user.id` instead of `req.user._id`
+    const userId = req.user.id; 
     
     try {
         const existingSeller = await Seller.findOne({ user: userId });
@@ -21,7 +21,7 @@ export const createSeller = async (req, res) => {
         const newSeller = new Seller({
             phone,
             address,
-            user: userId, // Ensure the user reference is set properly
+            user: userId, 
         });
 
         const savedSeller = await newSeller.save();
@@ -146,7 +146,7 @@ export const getSellerProducts = async (req, res) => {
     const { sellerId } = req.params;
 
     try {
-        // Validate sellerId as a valid MongoDB ObjectId
+        
         if (!mongoose.Types.ObjectId.isValid(sellerId)) {
             return res.status(400).json({
                 success: false,
@@ -154,7 +154,7 @@ export const getSellerProducts = async (req, res) => {
             });
         }
 
-        // Find the seller and populate their listed products
+        
         const seller = await Seller.findById(sellerId).populate('listedProducts');
         if (!seller) {
             return res.status(404).json({
@@ -163,7 +163,7 @@ export const getSellerProducts = async (req, res) => {
             });
         }
 
-        // Check if the seller has no listed products
+        
         if (!seller.listedProducts || seller.listedProducts.length === 0) {
             return res.status(200).json({
                 success: true,
@@ -172,7 +172,7 @@ export const getSellerProducts = async (req, res) => {
             });
         }
 
-        // Success response with the populated product data
+       
         return res.status(200).json({
             success: true,
             data: seller.listedProducts,
