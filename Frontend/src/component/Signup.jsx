@@ -7,6 +7,7 @@ const SignupPage = () => {
     name: "",
     email: "",
     password: "",
+    confirmPassword: '',
     role: "",
   });
 
@@ -26,8 +27,8 @@ const SignupPage = () => {
   };
 
   const validationForm = () => {
-    const { name, email, password, role } = formData;
-    if (!name || !email || !password || !role) {
+    const { name, email, password, confirmPassword, role } = formData;
+    if (!name || !email || !password || confirmPassword || !role) {
       return "All fileds are required.";
     }
 
@@ -37,6 +38,10 @@ const SignupPage = () => {
 
     if (password.length < 6) {
       return "Password must be at least 6 characters long.";
+    }
+
+    if(password !== confirmPassword){
+      return " Password do not match.";
     }
 
     return null;
@@ -81,16 +86,6 @@ const SignupPage = () => {
           />
         </div>
         <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
           <label htmlFor="role">Role:</label>
           <select
             id="role"
@@ -103,6 +98,26 @@ const SignupPage = () => {
             <option value="seller">Seller</option>
           </select>
         </div>
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="password">Confirm Password:</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </div>
         <button type="submit" disabled={isloading}>
           {isloading ? 'Registering...' : 'Register'}
         </button>
@@ -111,4 +126,4 @@ const SignupPage = () => {
   );
 };
 
-export default Signup;
+export default SignupPage;
