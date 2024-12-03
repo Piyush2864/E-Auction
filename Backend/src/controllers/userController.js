@@ -7,54 +7,61 @@ import nodemailer from 'nodemailer';
 
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, location, image, role } = req.body;
 
-        if (!name || !email || !password) {
+        
+        if (!name || !email || !password || !location?.city || !location?.state || !location?.country) {
             return res.status(400).json({
                 success: false,
-                message: 'All fields are required.'
+                message: 'All fields are required (including location).',
             });
         }
 
-        const validRoles = ['buyer', 'seller', 'admin'];
-        if (role && !validRoles.includes(role)) {
-            return res.status(400).json({ message: 'Invalid role specified.' });
-        }
-
-        const userExists = await User.findOne({ email });
-
-        if (userExists) {
+       
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: "User already exists."
+                message: 'User with this email already exists.',
             });
         }
 
-        const salt = await bcrypt.genSalt(12);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await User.create({
+        // Create a new user
+        const newUser = new User({
             name,
             email,
             password: hashedPassword,
-            role: role
+            location,
+            image: image || '', 
+            role: role || 'buyer', 
         });
 
-        const user = await newUser.save();
+        // Save the user to the database
+        await newUser.save();
 
-        return res.status(201).json({
+        res.status(201).json({
             success: true,
-            message: "User created successfully",
-            data: user
+            message: 'User registered successfully.',
+            user: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                location: newUser.location,
+                role: newUser.role,
+            },
         });
     } catch (error) {
-        console.error("Error in creating user:", error);
-        return res.status(500).json({
+        console.error('Error during user registration:', error);
+        res.status(500).json({
             success: false,
-            message: "Internal server error",
+            message: 'Internal server error.',
         });
     }
 };
+
 
 
 export const loginUser = async (req, res) => {

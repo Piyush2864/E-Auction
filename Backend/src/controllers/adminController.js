@@ -1,4 +1,4 @@
-import Seller from '../models/sellerModel.js';
+// import Seller from '../models/sellerModel.js';
 import User from '../models/userModel.js'
 import Product from '../models/productModel.js';
 import Auction from '../models/auctionModel.js';

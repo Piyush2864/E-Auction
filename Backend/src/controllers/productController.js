@@ -1,9 +1,8 @@
 import Product from '../models/productModel.js';
-import Seller from '../models/sellerModel.js'
+// import Seller from '../models/sellerModel.js';
+import Category from '../models/category.js';
 
-
-
-// In your controllers/productController.js
+// Create a Product
 export const createProduct = async (req, res) => {
     const { name, description, seller, category, startingDate, currentBid, bidEndDate } = req.body;
     try {
@@ -36,7 +35,7 @@ export const createProduct = async (req, res) => {
             seller,
             category,
             startingDate,
-            currentBid: currentBid || 0,
+            currentBid: typeof currentBid === 'number' ? currentBid : 0,
             bidEndDate,
         });
 
@@ -45,7 +44,7 @@ export const createProduct = async (req, res) => {
         sellerExists.listedProducts.push(savedProduct._id);
         await sellerExists.save();
 
-        return res.ststus(201).json({
+        return res.status(201).json({
             success: true,
             message: 'Product created successfully.',
             data: savedProduct
@@ -59,7 +58,25 @@ export const createProduct = async (req, res) => {
     }
 };
 
+// Get All Products
+export const getAllProducts = async (req, res) => {
+    try {
+        const products = await Product.find().lean();
 
+        return res.status(200).json({
+            success: true,
+            data: products,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error.',
+        });
+    }
+};
+
+// Get Product By Id
 export const getProductById = async (req, res) => {
     const { productId } = req.params;
 

@@ -1,6 +1,7 @@
 import Auction from '../models/auctionModel.js';
 import Product from '../models/productModel.js';
-import Seller from '../models/sellerModel.js';
+// import Seller from '../models/sellerModel.js';
+
 
 
 export const createAuction = async (req, res) => {
