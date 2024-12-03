@@ -295,3 +295,38 @@ export const addNotification = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
+export const requestSellerAccess = async(req, res)=> {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+        if(!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found.'
+            });
+        }
+
+        if(user.isSeller) {
+            return res.status(400).json({
+                success: false,
+                message: 'You are already a seller.'
+            });
+        }
+
+        user.sellerRequest = true;
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Seller request submitted.'
+        });
+    } catch (error) {
+        console.error('Error in requesting.', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error.'
+        });
+    }
+};
