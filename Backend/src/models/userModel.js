@@ -25,6 +25,16 @@ const userSchema = new Schema({
         default: 'buyer'
     },
 
+    isSeller: {
+        type: Boolean,
+        default: false
+    },
+
+    sellerRequest: {
+        type: Boolean,
+        default: false
+    },
+    
     resetPasswordToken: {
         type: String
     },
