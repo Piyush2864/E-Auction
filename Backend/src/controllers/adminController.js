@@ -71,20 +71,24 @@ export const getAllSellers = async(req, res) => {
 
 
 export const approveSeller = async(req, res) => {
-    const { sellerId } = req.params;
+    const { userId } = req.params;
 
     try {
-        const seller = await Seller.findByIdAndUpdate(sellerId, { verified:true}, { new: true });
-        if(!seller) {
+        const user = await User.findById(userId);
+        if(!user) {
             return res.status(404).json({
                 success: false,
-                message:'Seller not found.'
+                message:'User not found.'
             });
         }
 
+        user.isSeller = true;
+        user.sellerRequest = false;
+        await user.save();
+
         return res.status(200).json({
             success: true,
-            message: 'Seller verified successfully.',
+            message: 'Seller request approved successfully.',
             data: seller
         });
     } catch (error) {
@@ -98,21 +102,24 @@ export const approveSeller = async(req, res) => {
 
 
 export const rejectSeller = async(req, res) => {
-    const { sellerId } = req.params;
+    const { userId } = req.params;
 
     try {
-        const seller = await Seller.findByIdAndUpdate(sellerId, { verified: false }, { new: true });
+        const user = await User.findById(userId);
 
-        if(!seller) {
+        if(!user) {
             return res.status(404).json({
                 success: false,
-                message: 'Seller not found.'
+                message: 'User not found.'
             });
         }
 
+        user.sellerRequest = false;
+        await user.save();
+
         return res.status(200).json({
             success: true,
-            message: 'Seller rejected successfully.',
+            message: 'Seller request rejected successfully.',
             data: seller
         });
     } catch (error) {
