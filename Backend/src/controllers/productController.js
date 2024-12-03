@@ -1,62 +1,72 @@
 import Product from '../models/productModel.js';
-// import Seller from '../models/sellerModel.js';
 import Category from '../models/category.js';
+import User from '../models/userModel.js';
 
-// Create a Product
 export const createProduct = async (req, res) => {
-    const { name, description, seller, category, startingDate, currentBid, bidEndDate } = req.body;
-    try {
-        if (!name || !description || !seller || !category || !startingDate || !bidEndDate) {
-            return res.status(400).json({
-                success: false,
-                message: 'All fields are required.'
-            });
-        }
+  const { name, description, category, startingDate, currentBid, bidEndDate } = req.body;
 
-        const sellerExists = await Seller.findById(seller);
-        if (!sellerExists) {
-            return res.status(404).json({
-                success: false,
-                message: 'Seller not found. Please provide a valid seller Id.'
-            });
-        }
-
-        const categoryExists = await Category.findById(category);
-        if (!categoryExists) {
-            return res.status(404).json({
-                success: false,
-                message: 'Category not found. Please provide a valid category Id.'
-            });
-        }
-
-        const newProduct = new Product({
-            name,
-            description,
-            seller,
-            category,
-            startingDate,
-            currentBid: typeof currentBid === 'number' ? currentBid : 0,
-            bidEndDate,
-        });
-
-        const savedProduct = await newProduct.save();
-
-        sellerExists.listedProducts.push(savedProduct._id);
-        await sellerExists.save();
-
-        return res.status(201).json({
-            success: true,
-            message: 'Product created successfully.',
-            data: savedProduct
-        });
-    } catch (error) {
-        console.error('Error creating product.', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Server error.'
-        });
+  try {
+    // Validate required fields
+    if (!name || !description || !category || !startingDate || !bidEndDate) {
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required.',
+      });
     }
+
+    // Validate if the user is authorized to add products
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
+    if (!user.isSeller) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You must be approved as a seller to add products.',
+      });
+    }
+
+    // Validate category existence
+    const categoryExists = await Category.findById(category);
+    if (!categoryExists) {
+      return res.status(404).json({
+        success: false,
+        message: 'Category not found. Please provide a valid category Id.',
+      });
+    }
+
+    // Create the new product
+    const newProduct = new Product({
+      name,
+      description,
+      seller: userId, // Link to the buyer who became a seller
+      category,
+      startingDate,
+      currentBid: typeof currentBid === 'number' ? currentBid : 0,
+      bidEndDate,
+    });
+
+    const savedProduct = await newProduct.save();
+
+    return res.status(201).json({
+      success: true,
+      message: 'Product created successfully.',
+      data: savedProduct,
+    });
+  } catch (error) {
+    console.error('Error creating product.', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error.',
+    });
+  }
 };
+
 
 // Get All Products
 export const getAllProducts = async (req, res) => {
