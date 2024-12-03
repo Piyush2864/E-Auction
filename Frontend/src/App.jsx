@@ -9,6 +9,7 @@ import Home from './component/Home'
 import ProductDetails from "./component/Buyer/ProductDetails";
 import AddProduct from "./component/Seller/AddProduct";
 import ProductsPage from "./component/Buyer/Product";
+import AddCategory from "./component/Seller/AddCategory";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/add-product" element={<AddProduct/>}/>
           <Route path="/product-details/:productId" element={<ProductDetails/>}/>
           <Route path="/products" element={<ProductsPage/>}/>
+          <Route path="/add-category" element={<AddCategory/>} />
         </Routes>
       </Router>
     </>
