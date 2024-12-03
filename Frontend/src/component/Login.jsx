@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './login.css';
 
 const Login = () => {
   const [userData, setUserData] = useState({
@@ -53,10 +54,6 @@ const Login = () => {
           case 'buyer':
             console.log("second")
             navigate('/home');
-            break;
-          case 'seller':
-            console.log("3rd")
-            navigate('/seller-profile');
             break;
           default:
             setError('Invalid role');
