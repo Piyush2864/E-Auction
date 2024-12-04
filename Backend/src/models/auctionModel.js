@@ -9,12 +9,6 @@ const auctionSchema = new Schema({
         required: true
     },
 
-    seller: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seller',
-        required: true
-    },
-
     startingPrice: {
         type: Number,
         required: true

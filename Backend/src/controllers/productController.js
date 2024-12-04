@@ -6,7 +6,7 @@ export const createProduct = async (req, res) => {
   const { name, description, category, startingDate, currentBid, bidEndDate } = req.body;
 
   try {
-    // Validate required fields
+    
     if (!name || !description || !category || !startingDate || !bidEndDate) {
       return res.status(400).json({
         success: false,
@@ -14,7 +14,7 @@ export const createProduct = async (req, res) => {
       });
     }
 
-    // Validate if the user is authorized to add products
+    
     const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
@@ -31,7 +31,7 @@ export const createProduct = async (req, res) => {
       });
     }
 
-    // Validate category existence
+    
     const categoryExists = await Category.findById(category);
     if (!categoryExists) {
       return res.status(404).json({
@@ -40,7 +40,7 @@ export const createProduct = async (req, res) => {
       });
     }
 
-    // Create the new product
+    
     const newProduct = new Product({
       name,
       description,
@@ -68,7 +68,7 @@ export const createProduct = async (req, res) => {
 };
 
 
-// Get All Products
+
 export const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find().lean();
@@ -86,7 +86,7 @@ export const getAllProducts = async (req, res) => {
     }
 };
 
-// Get Product By Id
+
 export const getProductById = async (req, res) => {
     const { productId } = req.params;
 

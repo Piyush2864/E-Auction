@@ -12,12 +12,6 @@ const productSchema = new Schema({
         required: true
     },
 
-    seller: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seller',
-        required: true
-    },
-
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
