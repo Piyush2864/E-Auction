@@ -8,7 +8,7 @@ export const createAuction = async (req, res) => {
     const { product, startingPrice, bidEndDate } = req.body;
 
     try {
-        
+
         const existingProduct = await Product.findById(product).populate('seller');
 
         if (!existingProduct) {
@@ -18,7 +18,7 @@ export const createAuction = async (req, res) => {
             });
         }
 
-        
+
         if (existingProduct.status !== 'active') {
             return res.status(400).json({
                 success: false,
@@ -26,7 +26,7 @@ export const createAuction = async (req, res) => {
             });
         }
 
-    
+
         if (existingProduct.isInAuction) {
             return res.status(400).json({
                 success: false,
@@ -56,13 +56,13 @@ export const createAuction = async (req, res) => {
             product,
             seller: existingSeller._id,
             startingPrice,
-            currentBid: startingPrice, 
+            currentBid: startingPrice,
             bidEndDate,
         });
 
         const savedAuction = await auction.save();
 
-        
+
         existingProduct.isInAuction = true;
         existingProduct.auctionHistory.push(savedAuction._id);
         await existingProduct.save();
@@ -177,5 +177,46 @@ export const deleteAuction = async (req, res) => {
             success: false,
             message: 'Server error.'
         });
+    }
+};
+
+
+export const notifyAuctionStart = async (req, res) => {
+    try {
+        const auctions = await Auction.find({ status: 'upcoming', auctionStartDate: { $lte: new Date() } });
+
+        if (auctions.length === 0) {
+            return res.status(200).json({ success: true, message: 'No auctions to notify' });
+        }
+
+        const notifications = [];
+
+        for (const auction of auctions) {
+            const users = await User.find({}); // Notify all users
+            users.forEach((user) => {
+                user.notifications.push(`Auction for ${auction.product.name} has started!`);
+                notifications.push(user.save());
+            });
+
+            auction.status = 'active';
+            notifications.push(auction.save());
+        }
+
+        await Promise.all(notifications);
+
+        res.status(200).json({ success: true, message: 'Users notified and auctions updated' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error sending notifications', error: error.message });
+    }
+};
+
+
+export const getActiveAuction = async (req, res) => {
+    try {
+        const auctions = await Auction.find({ status: 'active' }).populate('product');
+
+        res.status(200).json({ success: true, data: auctions });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching active auctions', error: error.message });
     }
 };

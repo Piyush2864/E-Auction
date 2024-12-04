@@ -111,3 +111,27 @@ export const getProductById = async (req, res) => {
         });
     }
 };
+
+
+export const getApprovedProduct = async(req, res) => {
+  try {
+    const products = await Product.find({ status: 'approved' });
+
+    res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching approved products', error: error.message });
+  }
+};
+
+
+export const getUpcominProducts = async(req, res) => {
+  try {
+    const currentDate = new Date();
+
+    const products = await Product.find({ auctionStartDate: { $gt: currentDate }, status: 'approved' });
+
+    res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching upcoming products', error: error.message });
+  }
+};

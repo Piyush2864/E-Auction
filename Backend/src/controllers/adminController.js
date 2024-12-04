@@ -51,25 +51,6 @@ export const deleteUser = async(req, res) => {
 };
 
 
-export const getAllSellers = async(req, res) => {
-    try {
-        const sellers = await Seller.find().populate('listedProducts');
-
-        return res.status(200).json({
-            success: true,
-            message: 'Users fetched successfully.',
-            data: sellers
-        });
-    } catch (error) {
-        console.error('Error fetching sellers:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Server error while fetching sellers.'
-        });        
-    }
-};
-
-
 export const approveSeller = async(req, res) => {
     const { userId } = req.params;
 
