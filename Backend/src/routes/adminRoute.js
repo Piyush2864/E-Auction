@@ -1,5 +1,5 @@
 import express from 'express';
-import { approveProductForAuction, approveSeller, deleteProduct, deleteUser, endAuction, getAllAuctions, getAllProducts, getAllSellers, getAllUsers, getBidsForProduct, rejectProductForAuction, rejectSeller } from '../controllers/adminController.js';
+import { approveProductForAuction, approveSeller, deleteProduct, deleteUser, endAuction, getAllAuctions, getAllProducts, getAllUsers, getBidsForProduct, rejectProductForAuction, rejectSeller } from '../controllers/adminController.js';
 import { getAdminDashboardData } from '../controllers/adminDashboardController.js';
 import { authorizeRoles, protect } from '../middlewares/authMiddleware.js'
 
@@ -10,7 +10,7 @@ router.route('/users').get(protect, authorizeRoles('admin'), getAllUsers);
 
 router.route('/delete-user/:userId').delete(protect, authorizeRoles('admin'), deleteUser);
 
-router.route('/sellers').get(protect, authorizeRoles('admin'), getAllSellers);
+// router.route('/sellers').get(protect, authorizeRoles('admin'), getAllSellers);
 
 router.route('/seller/:sellerId').post(protect, authorizeRoles('admin'), approveSeller);
 
