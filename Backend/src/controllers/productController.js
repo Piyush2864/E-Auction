@@ -1,9 +1,10 @@
 import Product from '../models/productModel.js';
 import Category from '../models/category.js';
 import User from '../models/userModel.js';
+import uploadOnCloudinary from '../../cloudinary.js';
 
 export const createProduct = async (req, res) => {
-  const { name, description, category, startingDate, currentBid, bidEndDate } = req.body;
+  const { name, description, category, startingDate, currentBid, bidEndDate, image } = req.body;
 
   try {
     
@@ -31,6 +32,25 @@ export const createProduct = async (req, res) => {
       });
     }
 
+    const imageLocalPath = req.files.image[0].path;
+    console.log("first", imageLocalPath);
+
+    if(imageLocalPath) {
+      return res.status(404).json({
+        success: false,
+        message: 'Image not found.'
+      });
+    }
+
+    const uploadImage = await uploadOnCloudinary(imageLocalPath);
+    console.log("uploadImage", uploadImage);
+
+    if(!uploadImage) {
+      return res.status(404).json({
+        success: false,
+        message: 'Failed to upload on cloudinary.'
+      });
+    }
     
     const categoryExists = await Category.findById(category);
     if (!categoryExists) {
@@ -49,6 +69,7 @@ export const createProduct = async (req, res) => {
       startingDate,
       currentBid: typeof currentBid === 'number' ? currentBid : 0,
       bidEndDate,
+      image: uploadImage.secure_url
     });
 
     const savedProduct = await newProduct.save();
